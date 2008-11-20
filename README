@@ -1,0 +1,7 @@
+django-valhalla was inspired by my desire to selectively log what was being
+said on an IRC channel I've been involved in for most of my professional life.
+The key word here is "selectively".  I knew there were plenty of IRC-logging
+bots but let's face it, not everything that is typed is log worthy.
+
+I figure this project could be used anywhere you want to record a tidbit of
+data and associate it with a person and a timestamp.
