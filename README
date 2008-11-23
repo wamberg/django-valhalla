@@ -3,5 +3,12 @@ said on an IRC channel I've been involved in for most of my professional life.
 The key word here is "selectively".  I knew there were plenty of IRC-logging
 services but let's face it, not everything that is typed is log worthy.
 
-I figure this project could be used anywhere you want to record a tidbit of
-data and associate it with a person and a timestamp.
+I figure this project could be used anywhere you want a web service to record
+a tidbit of data and associate it with a person and a timestamp.
+
+
+Requirements
+============
+
+* Built on Django 1.0.2
+* django-rest-interface - http://code.google.com/p/django-rest-interface/
