@@ -1,10 +1,10 @@
 from django.conf.urls.defaults import *
 
+from valhalla import views
+
+
 urlpatterns = patterns('',
         url(r'^$',
-            'valhalla.views.deed_list',
-            name='valhalla_deed_list'),
-        url(r'^deed/$',
-            'valhalla.views.deed_detail',
-            name='valhall_deed_detail'),
+            views.json_deed_resource,
+            name='valhalla_json_deed_api'),
 )
