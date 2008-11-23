@@ -55,13 +55,15 @@ class DeedTest(TestCase):
         witness = 'johnny'
 
         # create and POST a new Deed
+        # we assign a user_id to the Deed but the actual user is assigned
+        # by our custom AuthenticatedJSONRecevier
         headers = {'HTTP_AUTHORIZATION': 'Basic %s' % (
             binascii.b2a_base64('tdanza:testpass')[:-1])}
         new_deed = valhalla_models.Deed(
                 text=text,
                 speaker=speaker,
                 witness=witness,
-                user=self.test_user)
+                user_id=1)
         serialized_deed = serializers.serialize('json', [new_deed])
         serialized_deed = serialized_deed.replace('"pk": null', '"pk": 1')
         response = self.client.post(
@@ -76,6 +78,7 @@ class DeedTest(TestCase):
         self.assertEquals(new_deed.text, deed_check.text)
         self.assertEquals(new_deed.speaker, deed_check.speaker)
         self.assertEquals(new_deed.witness, deed_check.witness)
+        self.assertEquals(deed_check.user.id, self.test_user.id)
         
 
 
@@ -94,7 +97,7 @@ class DeedTest(TestCase):
                 text=text,
                 speaker=speaker,
                 witness=witness,
-                user=self.test_user)
+                user_id=1)
         serialized_deed = serializers.serialize('json', [new_deed])
         serialized_deed = serialized_deed.replace('"pk": null', '"pk": 1')
         response = self.client.post(
