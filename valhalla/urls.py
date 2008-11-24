@@ -11,4 +11,10 @@ urlpatterns = patterns('',
         url(r'^api/json/deeds/(?P<object_id>\d+)/$',
             api.json_deed_resource_list,
             name='valhalla_json_deed_detail_api'),
+
+        # HTML views
+        url(r'^deeds/$',
+            'django.views.generic.simple.direct_to_template',
+            {'template': 'valhalla/deed_list.html'},
+            name='valhalla_deed_list'),
 )
