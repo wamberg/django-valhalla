@@ -1,20 +1,21 @@
 """
 Converts valhalla models into formats serialized for the API.
 """
+from datetime import datetime
 
 from django import forms
 from django.contrib.auth import models as auth_models
 from django.core import serializers
 
-from django_restapi import authentication
-from django_restapi import model_resource
-from django_restapi import receiver
-from django_restapi import responder
+from django_restapi import authentication as rest_authentication
+from django_restapi import model_resource as rest_model_resource
+from django_restapi import receiver as rest_receiver
+from django_restapi import responder as rest_responder
 
 from valhalla import models as valhalla_models
 
 
-class BasicAuthenticatedJSONReceiver(receiver.JSONReceiver):
+class BasicAuthenticatedJSONReceiver(rest_receiver.JSONReceiver):
     """
     This receiver not only grabs the raw_post_data from the request but also
     grabs the User from the request.
@@ -29,9 +30,9 @@ class BasicAuthenticatedJSONReceiver(receiver.JSONReceiver):
                     serializers.deserialize(
                         self.format, request.raw_post_data))
         except serializers.base.DeserializationError:
-            raise receiver.InvalidFormData
+            raise rest_receiver.InvalidFormData
         if len(deserialized_objects) != 1:
-            raise receiver.InvalidFormData
+            raise rest_receiver.InvalidFormData
         model = deserialized_objects[0].object
             
         # add authenticated user to deserialized data
@@ -46,9 +47,35 @@ class BasicAuthenticatedJSONReceiver(receiver.JSONReceiver):
         return forms.model_to_dict(model)
 
 
-json_deed_resource_list = model_resource.Collection(
-        queryset = valhalla_models.Deed.objects.all(),
-        permitted_methods = ('GET', 'POST'),
-        receiver = BasicAuthenticatedJSONReceiver(),
-        responder = responder.JSONResponder(paginate_by=10),
-        authentication = authentication.HttpBasicAuthentication())
+class DeedCollection(rest_model_resource.Collection):
+    """
+    Handles custom queries for Deed objects.
+    """
+    def __init__(self):
+        super(DeedCollection, self).__init__(
+            queryset=valhalla_models.Deed.objects.all(),
+            permitted_methods = ('GET', 'POST'),
+            receiver = BasicAuthenticatedJSONReceiver(),
+            responder = rest_responder.JSONResponder(paginate_by=10),
+            authentication = rest_authentication.HttpBasicAuthentication())
+
+    def read(self, request):
+        """
+        The request may contain queries that relate to the queryset.
+        The following queries affect the queryset:
+
+        start:
+            earliest date the queryset should contain
+        """
+        start_query = request.GET.get('start')
+        if start_query:
+            try:
+                start_date = datetime.strptime(start_query, '%Y-%m-%d')
+            except ValueError:
+                # start query came in an unexpected format
+                return self.responder.error(request, 400)
+            self.queryset = self.queryset.filter(deed_date__gte=start_date)
+
+        return self.responder.list(request, self.queryset)
+
+json_deed_resource_list = DeedCollection()

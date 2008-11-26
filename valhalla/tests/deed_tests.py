@@ -1,6 +1,7 @@
 """
 Test the deed API.
 """
+from datetime import datetime
 from os import path
 import binascii
 
@@ -12,6 +13,16 @@ from django.test import TestCase
 from valhalla import models as valhalla_models
 
 TESTS_DIR = path.dirname(__file__)
+TEST_USERNAME = 'tdanza'
+TEST_PASSWORD = 'testpass'
+
+
+def generate_auth_headers():
+    """
+    Generate the HTTP headers needed for basic HTTP_AUTHORIZATION.
+    """
+    return {'HTTP_AUTHORIZATION': 'Basic %s' % (
+        binascii.b2a_base64('%s:%s' % (TEST_USERNAME, TEST_PASSWORD))[:-1])}
 
 
 class DeedTest(TestCase):
@@ -31,8 +42,8 @@ class DeedTest(TestCase):
         """
         Create a test User so that deeds.json User field is valid
         """
-        test_user = auth_models.User(username='tdanza')
-        test_user.set_password('testpass')
+        test_user = auth_models.User(username=TEST_USERNAME)
+        test_user.set_password(TEST_PASSWORD)
         test_user.save()
         self.test_user = test_user
 
@@ -40,7 +51,7 @@ class DeedTest(TestCase):
         """
         Delete our test User.
         """
-        test_user = auth_models.User.objects.get(username='tdanza')
+        test_user = auth_models.User.objects.get(username=TEST_USERNAME)
         test_user.delete()
         self.test_user = None
 
@@ -57,8 +68,6 @@ class DeedTest(TestCase):
         # create and POST a new Deed
         # we assign a user_id to the Deed but the actual user is assigned
         # by our custom AuthenticatedJSONRecevier
-        headers = {'HTTP_AUTHORIZATION': 'Basic %s' % (
-            binascii.b2a_base64('tdanza:testpass')[:-1])}
         new_deed = valhalla_models.Deed(
                 text=text,
                 speaker=speaker,
@@ -66,6 +75,7 @@ class DeedTest(TestCase):
                 user_id=1)
         serialized_deed = serializers.serialize('json', [new_deed])
         serialized_deed = serialized_deed.replace('"pk": null', '"pk": 1')
+        headers = generate_auth_headers()
         response = self.client.post(
                 urlresolvers.reverse('valhalla_json_deed_list_api'),
                 data=serialized_deed,
@@ -82,7 +92,7 @@ class DeedTest(TestCase):
         
 
 
-    def test_forbidden_access(self):
+    def test_unauthorized_post(self):
         """
         Ensure a request that doesn't contain the correct basic authentication
         is forbidden.
@@ -114,3 +124,41 @@ class DeedTest(TestCase):
         response = self.client.get(
                 urlresolvers.reverse('valhalla_json_deed_list_api'), args=(1,))
         self.assertEquals(response.status_code, 401)
+
+    def test_get(self):
+        """
+        Test an authorized GET works and an unauthorize GET does not.
+        """
+        headers = generate_auth_headers()
+        # test an authorized GET
+        response = self.client.get(
+                urlresolvers.reverse('valhalla_json_deed_list_api'), **headers)
+        self.assertEquals(response.status_code, 200)
+        deeds = list(serializers.deserialize('json', response.content))
+        self.assert_(deeds)
+
+        # test an unauthorized GET
+        response = self.client.get(
+                urlresolvers.reverse('valhalla_json_deed_list_api'))
+        self.assertEquals(response.status_code, 401)
+        
+    def test_get_with_start_query(self):
+        """
+        Test a GET request that includes the ``start`` query.
+        """
+        headers = generate_auth_headers()
+        # test a well-formatted date
+        response = self.client.get(
+                urlresolvers.reverse('valhalla_json_deed_list_api'),
+                {'start': '2008-11-24'}, **headers)
+        self.assertEquals(response.status_code, 200)
+        deeds = list(serializers.deserialize('json', response.content))
+        self.assert_(deeds)
+        self.assert_(not [deed for deed in deeds
+            if deed.object.deed_date < datetime(2008, 11, 24)])
+
+        # test a poorly-formatted date
+        response = self.client.get(
+                urlresolvers.reverse('valhalla_json_deed_list_api'),
+                {'start': '08-11-24'}, **headers)
+        self.assertEquals(response.status_code, 400)
