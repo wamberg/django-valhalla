@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from valhalla import api
+from valhalla import api, forms
 
 
 urlpatterns = patterns('',
@@ -15,6 +15,7 @@ urlpatterns = patterns('',
         # HTML views
         url(r'^deeds/$',
             'django.views.generic.simple.direct_to_template',
-            {'template': 'valhalla/deed_list.html'},
+            {'template': 'valhalla/deed_list.html',
+                'extra_context': {'form': forms.DeedForm()}},
             name='valhalla_deed_list'),
 )
