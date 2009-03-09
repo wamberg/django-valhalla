@@ -1,13 +1,21 @@
-django-valhalla was inspired by my desire to selectively log what was being
-said on an IRC channel I've been involved in for most of my professional life.
-The key word here is "selectively".  I knew there were plenty of IRC-logging
-services but let's face it, not everything that is typed is log worthy.  This
-application could easily be used to log everything though.
+Introduction
+============
+
+django-valhalla is a RESTful API used to log IRC channels.
 
 Although I'm using this application for IRC logging purposes, there's nothing
 that couples the application to IRC.  I figure this project could be used
 anywhere you want a web service to record a tidbit of data and associate it
 with a person and a timestamp.
+
+
+Goals
+=====
+
+* GET Deeds
+* POST Deeds
+* DELETE Deeds
+* HTTP Basic Authentication
 
 
 Requirements
