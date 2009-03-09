@@ -10,14 +10,12 @@ class Deed(models.Model):
 
     ``text`` - what is to be recorded
     ``speaker`` - who said the ``text``
-    ``witness`` - who recorded what the ``speaker`` said
     ``user`` - the authenticated user responsible for creating the db record
     ``deed_date`` - when the Deed was took place
     ``create_date`` - when the Deed was created in the database
     """
     text = models.TextField()
-    speaker = models.CharField(max_length=200)
-    witness = models.CharField(max_length=200)
+    speaker = models.CharField(max_length=100, db_index=True)
     user = models.ForeignKey(auth_models.User)
-    deed_date = models.DateTimeField(default=datetime.now)
+    deed_date = models.DateTimeField(default=datetime.now, db_index=True)
     create_date = models.DateTimeField(default=datetime.now)
