@@ -63,7 +63,6 @@ class DeedTest(TestCase):
         # establish varilable for Deed creation and checking
         text = 'test deed post'
         speaker = 'jimmy'
-        witness = 'johnny'
 
         # create and POST a new Deed
         # we assign a user_id to the Deed but the actual user is assigned
@@ -71,7 +70,6 @@ class DeedTest(TestCase):
         new_deed = valhalla_models.Deed(
                 text=text,
                 speaker=speaker,
-                witness=witness,
                 user_id=1)
         serialized_deed = serializers.serialize('json', [new_deed])
         serialized_deed = serialized_deed.replace('"pk": null', '"pk": 1')
@@ -87,7 +85,6 @@ class DeedTest(TestCase):
         deed_check = valhalla_models.Deed.objects.get(text=text)
         self.assertEquals(new_deed.text, deed_check.text)
         self.assertEquals(new_deed.speaker, deed_check.speaker)
-        self.assertEquals(new_deed.witness, deed_check.witness)
         self.assertEquals(deed_check.user.id, self.test_user.id)
         
 
@@ -100,13 +97,11 @@ class DeedTest(TestCase):
         # establish varilable for Deed creation and checking
         text = 'test forbidden access'
         speaker = 'jimmy'
-        witness = 'johnny'
 
         # create and POST a new Deed
         new_deed = valhalla_models.Deed(
                 text=text,
                 speaker=speaker,
-                witness=witness,
                 user_id=1)
         serialized_deed = serializers.serialize('json', [new_deed])
         serialized_deed = serialized_deed.replace('"pk": null', '"pk": 1')

@@ -7,8 +7,7 @@
             "text": "i know other_guy, i tried terminal too, it almost killed me", 
             "deed_date": "2008-11-20 21:00:15", 
             "speaker": "some_guy", 
-            "user": 1, 
-            "witness": "test_guy"
+            "user": 1 
         }
     }, 
     {
@@ -19,8 +18,7 @@
             "text": "they like, can't get it through their little ant brain that there's no food for them in my kitchen", 
             "deed_date": "2008-11-20 21:00:43", 
             "speaker": "other_guy", 
-            "user": 1, 
-            "witness": "some_guy"
+            "user": 1 
         }
     }, 
     {
@@ -31,8 +29,7 @@
             "text": "generating rows", 
             "deed_date": "2008-11-24 21:22:45", 
             "speaker": "jimmy", 
-            "user": 1, 
-            "witness": "johnny"
+            "user": 1 
         }
     }, 
     {
@@ -43,8 +40,7 @@
             "text": "Got to love the test", 
             "deed_date": "2008-11-24 21:22:45", 
             "speaker": "timmy", 
-            "user": 1, 
-            "witness": "tommy"
+            "user": 1 
         }
     }, 
     {
@@ -55,8 +51,7 @@
             "text": "My new test", 
             "deed_date": "2008-11-25 21:22:45", 
             "speaker": "ramberg", 
-            "user": 1, 
-            "witness": "web"
+            "user": 1 
         }
     }, 
     {
@@ -67,8 +62,7 @@
             "text": "Fantasteek", 
             "deed_date": "2007-11-25 21:22:45", 
             "speaker": "marcus", 
-            "user": 1, 
-            "witness": "web"
+            "user": 1 
         }
     }, 
     {
@@ -79,8 +73,7 @@
             "text": "steak", 
             "deed_date": "2009-11-25 22:00:00", 
             "speaker": "sampson", 
-            "user": 1, 
-            "witness": "web"
+            "user": 1 
         }
     }, 
     {
@@ -91,8 +84,7 @@
             "text": "jajajajajaja", 
             "deed_date": "2007-11-25 21:25:00", 
             "speaker": "some_guy", 
-            "user": 1, 
-            "witness": "web"
+            "user": 1 
         }
     }, 
     {
@@ -103,8 +95,7 @@
             "text": "right? im not crazy right?", 
             "deed_date": "2007-11-25 17:33:17", 
             "speaker": "some_guy", 
-            "user": 1, 
-            "witness": "web"
+            "user": 1 
         }
     }, 
     {
@@ -115,8 +106,7 @@
             "text": "a guy i work with just made the \"blog\" gang sign.  it's like blood.  but the left hand is a g", 
             "deed_date": "2007-11-25 17:49:54", 
             "speaker": "sampson", 
-            "user": 1, 
-            "witness": "web"
+            "user": 1 
         }
     }, 
     {
@@ -127,8 +117,7 @@
             "text": "<script type=\"text/javascript\">alert(\"watch out!\");</script>", 
             "deed_date": "2007-11-25 17:49:54", 
             "speaker": "sampson", 
-            "user": 1, 
-            "witness": "web"
+            "user": 1 
         }
     }
 ]
