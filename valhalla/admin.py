@@ -6,3 +6,4 @@ class DeedAdmin(admin.ModelAdmin):
             'speaker',
             'text'
     )
+    date_hierarchy = 'deed_date'
