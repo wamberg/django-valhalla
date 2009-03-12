@@ -17,5 +17,8 @@ class Deed(models.Model):
     text = models.TextField()
     speaker = models.CharField(max_length=100, db_index=True)
     user = models.ForeignKey(auth_models.User)
-    deed_date = models.DateTimeField(default=datetime.now, db_index=True)
-    create_date = models.DateTimeField(default=datetime.now)
+    deed_date = models.DateTimeField(default=datetime.utcnow, db_index=True)
+    create_date = models.DateTimeField(default=datetime.utcnow)
+
+    class Meta:
+        ordering = ['-deed_date']
