@@ -21,4 +21,4 @@ class Deed(models.Model):
     create_date = models.DateTimeField(default=datetime.utcnow)
 
     class Meta:
-        ordering = ['-deed_date']
+        ordering = ['deed_date']
