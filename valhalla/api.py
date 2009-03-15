@@ -14,6 +14,8 @@ from django_restapi import responder as rest_responder
 
 from valhalla import models as valhalla_models
 
+from django.utils import simplejson
+
 
 class BasicAuthenticatedJSONReceiver(rest_receiver.JSONReceiver):
     """
@@ -77,5 +79,35 @@ class DeedCollection(rest_model_resource.Collection):
             self.queryset = self.queryset.filter(deed_date__gte=start_date)
 
         return self.responder.list(request, self.queryset)
+
+    def _extract_dispatch(self, request):
+        return simplejson.loads(request.raw_post_data)[0].get('dispatch', None)
+
+    def create(self, request):
+        """ 
+            Creates a resource with attributes given by POST, then
+            redirects to the resource URI. 
+        """
+        # Create form filled with POST data
+        ResourceForm = forms.models.modelform_factory(self.queryset.model, form=self.form_class)
+        data = self.receiver.get_post_data(request)
+        form = ResourceForm(data)
+
+        # If the data contains no errors, save the model,
+        # return a "201 Created" response with the model's
+        # URI in the location header and a representation
+        # of the model in the response body.
+        if form.is_valid():
+            dispatch = self._extract_dispatch(request)
+            new_model = form.save()
+            new_model.dispatch(dispatch)
+            model_entry = self.entry_class(self, new_model)
+            response = model_entry.read(request)
+            response.status_code = 201 
+            response['Location'] = model_entry.get_url()
+            return response
+
+        # Otherwise return a 400 Bad Request error.
+        raise InvalidModelData(form.errors)
 
 json_deed_resource_list = DeedCollection()

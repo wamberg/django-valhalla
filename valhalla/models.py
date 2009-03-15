@@ -3,6 +3,8 @@ from datetime import datetime
 from django.contrib.auth import models as auth_models
 from django.db import models
 
+import dispatch
+
 
 class Deed(models.Model):
     """
@@ -22,3 +24,9 @@ class Deed(models.Model):
 
     class Meta:
         ordering = ['deed_date']
+
+    def dispatch(self, dispatch_list):
+        if dispatch_list: 
+            for d in dispatch_list:
+                dispatch.dispatch_to(d, self.text)
+
