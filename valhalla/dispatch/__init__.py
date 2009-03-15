@@ -16,3 +16,12 @@ def dispatch_to(dispatcher, message):
     else:
         raise "no dispatcher %s found" % dispatcher
 
+
+class TestDispatcher(object):
+    """
+    Dummy dispatcher used in unit tests
+
+    ``OUTBOUND`` is setup by the TestCase setUp method.
+    """
+    def send(self, message):
+        OUTBOUND.append(message)

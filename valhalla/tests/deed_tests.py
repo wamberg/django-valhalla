@@ -10,6 +10,7 @@ from django.core import serializers
 from django.core import urlresolvers
 from django.test import TestCase
 
+from valhalla import dispatch
 from valhalla import models as valhalla_models
 
 TESTS_DIR = path.dirname(__file__)
@@ -47,6 +48,13 @@ class DeedTest(TestCase):
         test_user.save()
         self.test_user = test_user
 
+        # setup dispatch catcher
+        dispatch.OUTBOUND = []
+        # setup dummy dispatcher
+        self.original_dispatchers = dispatch.DISPATCHERS
+        for key in dispatch.DISPATCHERS.keys():
+            dispatch.DISPATCHERS[key] = dispatch.TestDispatcher
+
     def tearDown(self):
         """
         Delete our test User.
@@ -54,6 +62,9 @@ class DeedTest(TestCase):
         test_user = auth_models.User.objects.get(username=TEST_USERNAME)
         test_user.delete()
         self.test_user = None
+
+        del dispatch.OUTBOUND
+        dispatch.DISPATCHERS = self.original_dispatchers
 
     def test_deed_post(self):
         """
@@ -173,3 +184,38 @@ class DeedTest(TestCase):
                 urlresolvers.reverse('valhalla_json_deed_list_api'),
                 {'start': '08-11-24'}, **headers)
         self.assertEquals(response.status_code, 400)
+
+    def test_dispatch_post(self):
+        """
+        Test our dispatch code
+        """
+        # establish varilable for Deed creation and checking
+        text = 'test deed post'
+        speaker = 'jimmy'
+
+        # create and POST a new Deed
+        # we assign a user_id to the Deed but the actual user is assigned
+        # by our custom AuthenticatedJSONRecevier
+        new_deed = valhalla_models.Deed(
+                text=text,
+                speaker=speaker,
+                user_id=1)
+        dispatch_json = '"dispatch": ["twitter"]'
+        serialized_deed = serializers.serialize('json', [new_deed])
+        serialized_deed = serialized_deed.replace('"pk": null', '"pk": 1')
+        serialized_deed = serialized_deed.replace(
+                '"fields"', '"dispatch": ["twitter"], "fields"')
+        headers = generate_auth_headers()
+        response = self.client.post(
+                urlresolvers.reverse('valhalla_json_deed_list_api'),
+                data=serialized_deed,
+                content_type='application/json',
+                **headers)
+        self.assert_(text in dispatch.OUTBOUND)
+
+        # assert we created the Deed
+        self.assertEquals(response.status_code, 201)
+        deed_check = valhalla_models.Deed.objects.get(text=text)
+        self.assertEquals(new_deed.text, deed_check.text)
+        self.assertEquals(new_deed.speaker, deed_check.speaker)
+        self.assertEquals(deed_check.user.id, self.test_user.id)
