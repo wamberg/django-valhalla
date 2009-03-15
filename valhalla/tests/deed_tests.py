@@ -87,8 +87,6 @@ class DeedTest(TestCase):
         self.assertEquals(new_deed.speaker, deed_check.speaker)
         self.assertEquals(deed_check.user.id, self.test_user.id)
         
-
-
     def test_unauthorized_post(self):
         """
         Ensure a request that doesn't contain the correct basic authentication
@@ -120,9 +118,9 @@ class DeedTest(TestCase):
                 urlresolvers.reverse('valhalla_json_deed_list_api'), args=(1,))
         self.assertEquals(response.status_code, 401)
 
-    def test_get(self):
+    def test_get_list(self):
         """
-        Test an authorized GET works and an unauthorize GET does not.
+        Test an authorized GET works and an unauthorized GET does not.
         """
         headers = generate_auth_headers()
         # test an authorized GET
@@ -135,6 +133,24 @@ class DeedTest(TestCase):
         # test an unauthorized GET
         response = self.client.get(
                 urlresolvers.reverse('valhalla_json_deed_list_api'))
+        self.assertEquals(response.status_code, 401)
+
+    def test_get_detail(self):
+        """
+        Test an authorized GET works for a single Deed and an
+        unauthorized GET does not.
+        """
+        headers = generate_auth_headers()
+        # test an authorized GET
+        response = self.client.get(
+                urlresolvers.reverse('valhalla_json_deed_detail_api', args=[1]), **headers)
+        self.assertEquals(response.status_code, 200)
+        deed = list(serializers.deserialize('json', response.content))
+        self.assert_(deed)
+
+        # test an unauthorized GET
+        response = self.client.get(
+                urlresolvers.reverse('valhalla_json_deed_detail_api', args=[1]))
         self.assertEquals(response.status_code, 401)
         
     def test_get_with_start_query(self):

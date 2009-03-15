@@ -8,7 +8,7 @@ urlpatterns = patterns('',
         url(r'^api/json/deeds/$',
             api.json_deed_resource_list,
             name='valhalla_json_deed_list_api'),
-        url(r'^api/json/deeds/(?P<object_id>\d+)/$',
+        url(r'^api/json/deeds/(?P<pk_value>\d+)/$',
             api.json_deed_resource_list,
             name='valhalla_json_deed_detail_api'),
 )
